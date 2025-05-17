@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Flip the card Game</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&family=Roboto&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="navigation">
+    <h1>Flip 'N' Answer</h1>
+    <nav>
+      <ul>
+        <li><a href="#home">Home</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#leaderboard">Leaderboard</a></li>
+      </ul>
+    </nav>
+  </div>
+
+  <div class="intro">
+    <h2>Welcome to Flip 'N' Answer!</h2>
+    <p>Test your memory and have fun!</p>
+    
+<button id="startBtn" class="startBtn">
+  <div class="startBtn-outer">
+    <div class="startBtn-inner">
+      <span>Start Game</span>
+    </div>
+  </div>
+</button><br><br>
+
+    <b>Instructions:</b>
+    <p class="instructions">
+      Click on the card to flip them.<br>
+      Match pairs of cards to score points.<br>
+      Answer the quiz questions to earn extra points.
+    </p>
+  </div>
+
+  <div class="main-content" style="display:none;">
+    <div class="game-board" id="gameBoard"></div>
+
+    <div id="quizModal" class="modal">
+      <div class="modal-content">
+        <h3 id="quizQuestion">Question?</h3>
+        <div id="quizOptions" class="options"></div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button id="restartBtn">Restart</button>
+      <button id="nextLevelBtn" style="display:none;">Next Level</button>
+    </div>
+
+    <div class="leaderboard">
+      <h2>Leaderboard</h2>
+      <ul id="leaderboardList"></ul>
+    </div>
+
+    <div class="stats">
+      <span id="score">Score: 0</span>
+      <span id="level">Level: 1</span>
+      <span id="currentPlayer" style="margin-left:12px; color:#6c63ff; font-weight:bold;">Player 1's Turn</span>
+    </div>
+  </div>
+
+  <div class="footer">
+    <p>&copy; 2025 Flip 'N' Answer. All rights reserved.</p>
+    <p>Developed by Bharath Mummadi</p>
+    <p>Contact: <a href="mailto:bharathmummadi9966@gmail.com">Mail me</a></p>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
