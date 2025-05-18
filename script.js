@@ -1,9 +1,6 @@
 const board = document.getElementById('gameBoard');
 const scoreDisplay = document.getElementById('score');
 const levelDisplay = document.getElementById('level');
-const restartBtn = document.getElementById('restartBtn');
-const restartSpinner = restartBtn.querySelector('.spinner');
-const restartText = restartBtn.querySelector('.restart-text');
 const nextBtn = document.getElementById('nextLevelBtn');
 const currentPlayerDisplay = document.getElementById('currentPlayer');
 const startBtn = document.getElementById('startBtn');
@@ -192,6 +189,8 @@ const jsQuestions = {
 };
 
 let selectedLevel = 'easy';
+let allQuestions = [];
+let currentQuestionIndex = 0;
 
 const levelSelect = document.getElementById('levelSelect');
 if (levelSelect) {
@@ -203,8 +202,15 @@ if (levelSelect) {
 function loadQuestionsForLevel(level) {
   let difficulty = selectedLevel;
   if (!jsQuestions[difficulty]) difficulty = 'easy';
-  // Shuffle questions for the selected level
-  allQuestions = shuffle([...jsQuestions[difficulty]]);
+  // Shuffle questions for the selected level and remove used questions
+  if (!window.usedQuestions) window.usedQuestions = { easy: [], medium: [], hard: [] };
+  let available = jsQuestions[difficulty].filter(q => !window.usedQuestions[difficulty].includes(q.question));
+  if (available.length === 0) {
+    // Reset if all used
+    window.usedQuestions[difficulty] = [];
+    available = [...jsQuestions[difficulty]];
+  }
+  allQuestions = shuffle([...available]);
   currentQuestionIndex = 0;
 }
 
@@ -212,11 +218,20 @@ function shuffle(array) {
   return [...array].sort(() => 0.5 - Math.random());
 }
 
-function createBoard(size = 4) {
+function createBoard() {
+  const size = 4; // Always 4x4
   board.innerHTML = '';
   matchedPairs = 0;
-  let picks = shuffle(icons).slice(0, (size * size) / 2);
+  let picks = shuffle(icons).slice(0, 8); // 8 pairs for 16 cards
   cards = shuffle([...picks, ...picks]);
+
+  // Responsive card size
+  let cardSize = '90px';
+  if (window.innerWidth <= 600) {
+    cardSize = '60px';
+  } else if (window.innerWidth <= 900) {
+    cardSize = '75px';
+  }
 
   cards.forEach((icon) => {
     const card = document.createElement('div');
@@ -228,14 +243,22 @@ function createBoard(size = 4) {
         <div class="card-back">${icon}</div>
       </div>
     `;
+    card.style.width = cardSize;
+    card.style.height = cardSize;
     board.appendChild(card);
-
     card.addEventListener('click', () => flipCard(card));
   });
 
-  board.style.gridTemplateColumns = `repeat(${Math.sqrt(cards.length)}, 1fr)`;
+  board.style.gridTemplateColumns = 'repeat(4, 1fr)';
   updateStats();
 }
+
+// Re-render board on resize for responsiveness
+window.addEventListener('resize', () => {
+  if (mainContent.style.display !== 'none') {
+    createBoard();
+  }
+});
 
 function flipCard(card) {
   if (lockBoard || card.classList.contains('flipped')) return;
@@ -277,6 +300,7 @@ function showQuestion(card1, card2) {
 
   // Get next question from the selected set
   const randomQ = allQuestions[currentQuestionIndex % allQuestions.length];
+  window.usedQuestions[selectedLevel].push(randomQ.question);
   currentQuestionIndex++;
 
   questionEl.textContent = randomQ.question;
@@ -314,9 +338,19 @@ function switchPlayer() {
 }
 
 function updateStats() {
-  scoreDisplay.textContent = `${playerNames[1]}: ${playerScores[1]} | ${playerNames[2]}: ${playerScores[2]}`;
-  currentPlayerDisplay.textContent = `${playerNames[currentPlayer]}'s Turn`;
-  levelDisplay.textContent = `Level: ${level}`;
+  // Update both stats and playerStats for new layout
+  const playerStats = document.getElementById('playerStats');
+  if (playerStats) {
+    playerStats.innerHTML = `<span id="currentPlayer" style="color:#6c63ff; font-weight:bold;">${playerNames[currentPlayer]}'s Turn</span>`;
+  }
+  const scoreDiv = document.getElementById('score');
+  if (scoreDiv) {
+    scoreDiv.textContent = `Score: ${playerNames[1]}: ${playerScores[1]} | ${playerNames[2]}: ${playerScores[2]}`;
+  }
+  const levelDiv = document.getElementById('level');
+  if (levelDiv) {
+    levelDiv.textContent = `Level: ${level}`;
+  }
   // Update mobile player names
   const mp1 = document.getElementById('mobilePlayer1');
   const mp2 = document.getElementById('mobilePlayer2');
@@ -324,6 +358,7 @@ function updateStats() {
     mp1.textContent = playerNames[1];
     mp2.textContent = playerNames[2];
   }
+  saveGameState && saveGameState();
 }
 
 function checkWin() {
@@ -359,33 +394,14 @@ function resetFlippedCards() {
   lockBoard = false;
 }
 
-function showRestartLoading(show) {
-  if (show) {
-    restartSpinner.style.display = 'inline-block';
-    restartBtn.disabled = true;
-    restartText.style.opacity = 0.5;
-  } else {
-    restartSpinner.style.display = 'none';
-    restartBtn.disabled = false;
-    restartText.style.opacity = 1;
-  }
-}
-
-restartBtn.addEventListener('click', async () => {
-  showRestartLoading(true);
-  // Simulate loading for 700ms (or until board is ready)
-  await new Promise(res => setTimeout(res, 700));
-  await startGame();
-  showRestartLoading(false);
-});
+// Removed restart button event listener and related logic
 
 nextBtn.addEventListener('click', () => {
   level++;
   nextBtn.style.display = 'none';
   loadQuestionsForLevel(level);
-  let size = 2 + level;
-  if ((size * size) % 2 !== 0) size++;
-  createBoard(size);
+  createBoard();
+  saveGameState && saveGameState();
 });
 
 async function startGame() {
@@ -406,24 +422,24 @@ async function startGame() {
   currentPlayer = 1;
   nextBtn.style.display = 'none';
   loadQuestionsForLevel(level);
-  createBoard(4);
+  createBoard();
   updateStats();
+  saveGameState && saveGameState();
+  showRestartLoading(false);
 }
 
 if (startBtn) {
   startBtn.addEventListener('click', startGame);
 }
 
-restartBtn.addEventListener('click', startGame);
-
 nextBtn.addEventListener('click', () => {
   level++;
   nextBtn.style.display = 'none';
   loadQuestionsForLevel(level);
-  let size = 2 + level;
-  if ((size * size) % 2 !== 0) size++;
-  createBoard(size);
+  createBoard();
+  saveGameState && saveGameState();
 });
+
 
 document.addEventListener('DOMContentLoaded', () => {
   const instructions = document.querySelector('.instructions');
