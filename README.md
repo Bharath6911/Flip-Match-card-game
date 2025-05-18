@@ -4,7 +4,7 @@
 
 ---
 
-## 🎮 Features
+## Features
 
 - **Classic Memory Gameplay:** Flip cards to find matching pairs in a 4x4 grid.
 - **JavaScript Quiz Integration:** Each successful match triggers a JavaScript question. Answer correctly to score!
@@ -17,7 +17,7 @@
 
 ---
 
-## 🚀 Why is Flip 'N' Answer Different?
+## Why is Flip 'N' Answer Different?
 
 Unlike traditional memory games, **Flip 'N' Answer** combines memory skills with coding knowledge:
 - **Educational Twist:** Reinforces JavaScript concepts while you play.
@@ -27,14 +27,14 @@ Unlike traditional memory games, **Flip 'N' Answer** combines memory skills with
 
 ---
 
-## 📱 Responsive Layout
+## Responsive Layout
 
 - **Desktop:** Three-column layout with stats, game board, and leaderboard side by side.
 - **Mobile:** Stacks vertically, with player names above the board and a fixed 4x4 grid for cards.
 
 ---
 
-## 🧩 Project Structure
+## Project Structure
 
 ```
 /Flip-Match-card-game/
@@ -48,7 +48,7 @@ Unlike traditional memory games, **Flip 'N' Answer** combines memory skills with
 ---
 
 
-## 🧠 Credits & Inspiration
+## Credits & Inspiration
 
 - **Idea Source:** [Codecircuit Idealist - Memory matching game with score tracker and level up](https://www.codecircuit.ai/idealist)
 - **Developer:** Bharath Mummadi
